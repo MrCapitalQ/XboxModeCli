@@ -1,0 +1,12 @@
+MONITORINFOEXW
+VIRTUAL_KEY
+
+EnumChildWindows
+EnumWindows
+GetMonitorInfo
+GetWindowRect
+GetWindowThreadProcessId
+IsWindowVisible
+keybd_event
+MonitorFromWindow
+SetCursorPos

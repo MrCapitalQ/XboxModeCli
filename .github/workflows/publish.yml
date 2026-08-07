@@ -1,0 +1,32 @@
+on:
+  workflow_call:
+    inputs:
+      IS_PRERELEASE:
+        type: boolean
+        default: false
+
+jobs:
+
+  publish:
+    name: GitHub Releases Publish
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download Release Artifacts
+      uses: actions/download-artifact@v8
+      with:
+        pattern: 'XboxModeCli_*'
+        merge-multiple: true
+
+    - shell: bash
+      run: |
+        ls
+
+    - name: Release
+      uses: softprops/action-gh-release@v3
+      with:
+        generate_release_notes: true
+        files: '**/XboxModeCli_*.zip'
+        draft: true
+        prerelease: ${{ inputs.IS_PRERELEASE }}

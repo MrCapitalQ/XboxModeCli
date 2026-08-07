@@ -1,0 +1,39 @@
+name: Prerelease
+
+on:
+  push:
+    tags:
+      - 'v*.*.*-pre'
+
+jobs:
+  version:
+    name: Determine Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Compute version from tag
+        id: version
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build
+    needs: version
+    uses: ./.github/workflows/build.yml
+    with:
+      UPLOAD_ARTIFACTS: true
+      VERSION: ${{ needs.version.outputs.version }}
+
+  publish:
+    name: Publish
+    needs: build
+    uses: ./.github/workflows/publish.yml
+    with:
+      IS_PRERELEASE: true
+    permissions:
+      contents: write
+    secrets: inherit
