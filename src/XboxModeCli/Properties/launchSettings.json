@@ -1,5 +1,9 @@
 {
   "profiles": {
+    "XboxModeCli (status)": {
+      "commandName": "Project",
+      "commandLineArgs": "status"
+    },
     "XboxModeCli (activate)": {
       "commandName": "Project",
       "commandLineArgs": "activate -m -w --closeSettingsApp"

@@ -38,6 +38,13 @@ var closeSettingsAppOption = new Option<bool>("--closeSettingsApp")
     Description = "Close the Settings app if it's open. This is a hacky workaround for a bug where switching in and out of XBOX mode can sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in this CLI and is likely to be removed in the future."
 };
 
+var statusCommand = new Command("status", "Shows the current status of XBOX mode.");
+statusCommand.SetAction(async (parseResult, cancellationToken) =>
+{
+    var isActive = await XboxModeHelper.IsXboxModeAsync(cancellationToken);
+    Console.WriteLine($"XBOX mode: {(isActive ? "active" : "inactive")}");
+    return 0;
+});
 
 var activateCommand = new Command("activate", "Activates XBOX mode.")
 {
@@ -46,10 +53,10 @@ var activateCommand = new Command("activate", "Activates XBOX mode.")
     waitForSessionUnlockTimeoutOption,
     closeSettingsAppOption
 };
-activateCommand.SetAction((parseResult, cancellationToken) =>
+activateCommand.SetAction(async (parseResult, cancellationToken) =>
 {
     Console.WriteLine("Activating XBOX mode...");
-    return SetXboxModeAction(parseResult, true, cancellationToken);
+    return await SetXboxModeAction(parseResult, true, cancellationToken);
 });
 
 var deactivateCommand = new Command("deactivate", "Deactivates XBOX mode.")
@@ -59,12 +66,13 @@ var deactivateCommand = new Command("deactivate", "Deactivates XBOX mode.")
     waitForSessionUnlockTimeoutOption,
     closeSettingsAppOption
 };
-deactivateCommand.SetAction((parseResult, cancellationToken) =>
+deactivateCommand.SetAction(async (parseResult, cancellationToken) =>
 {
     Console.WriteLine("Deactivating XBOX mode...");
-    return SetXboxModeAction(parseResult, false, cancellationToken);
+    return await SetXboxModeAction(parseResult, false, cancellationToken);
 });
 
+rootCommand.Subcommands.Add(statusCommand);
 rootCommand.Subcommands.Add(activateCommand);
 rootCommand.Subcommands.Add(deactivateCommand);
 
@@ -88,9 +96,7 @@ async Task<int> SetXboxModeAction(ParseResult parseResult, bool isActive, Cancel
         }
     }
 
-    var movePointer = parseResult.GetValue(movePointerOption);
-    var isSuccessful = await XboxModeHelper.SetXboxModeAsync(isActive, movePointer, cancellationToken);
-
+    var isSuccessful = await XboxModeHelper.SetXboxModeAsync(isActive, cancellationToken);
 
     if (isSuccessful
         && isActive

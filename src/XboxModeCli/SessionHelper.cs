@@ -46,5 +46,4 @@ internal class SessionHelper
 
         return tcs.Task;
     }
-
 }
