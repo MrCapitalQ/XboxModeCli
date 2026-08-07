@@ -5,8 +5,8 @@ Xbox Mode CLI is a command line interface used to interact with Windows 11's XBO
 ## Background
 Windows 11 introduced a mode that is more friendly when using a gamepad, handhelds, or on a big screen known as XBOX
 mode (formerly Full Screen Experience). Unfortunately, there's no documented way to automate switching in and out of
-XBOX mode. This can be useful when game streaming to a mobile device or when using an existing desktop PC part-time on
-a TV. This project aims provide a way to fill that gap without having to through the UI or requring user input.
+XBOX mode. This can be useful when game streaming to a mobile device or when using an existing desktop PC on
+a TV part-time. This project aims provide a way to non-interactively control XBOX mode.
 
 ## Commands
 ```
@@ -74,25 +74,28 @@ XboxModeCli activate [-m|--movePointer] [-w|--waitForSessionUnlock] [-t|--waitTi
 ## Examples
 
 ### Moonlight & Sunshine Game Streaming
-Set up Sunshine (or ideally one of its forks that automates virtual displays) with a dedicated XBOX Mode application so
-it can start directly in XBOX mode and revert to desktop mode upon disconnect. Using a telescoping controller and my
-mobile phone, I can get an excellent handheld gaming experience.
+Get an XBOX handheld-like experience by setting up game streaming service that loads directly into XBOX mode. This can
+be achieved with a mobile device, a telescoping controller, and Sunshine configured with prep commands to activate XBOX
+mode automatically while streaming.
 
-1. Add a new application in Sunshine and call it "XBOX Mode".
-2. Add prep commands for this new application.
+1. Download a copy of the XboxModeCli executable from the releases and save it somewhere.
+2. In Sunshine, create a new application and call it "XBOX Mode".
+3. Add a new set of prep commands for this application. Update `<path_to>` to point it to the location of the
+executable saved in step 1.
 
    | Action | Command |
    |--------|---------|
-   | Do     | `cmd /c "start """" ""<path_to>\XboxModeCli.exe"" activate -m -w` |
-   | Undo   | `cmd /c "start """" ""<path_to>\XboxModeCli.exe"" deactivate -e -w` |
+   | Do     | `cmd /c "start """" ""<path_to>\XboxModeCli.exe"" activate -m -w"` |
+   | Undo   | `cmd /c "start """" ""<path_to>\XboxModeCli.exe"" deactivate -e -w"` |
 
-3. Open Moonlight (or a compatible client), connect to the PC, and select "XBOX Mode". The stream should start and XBOX
-mode should automatically be activated. After disconnecting, the PC should be back to desktop mode.
+3. Open Moonlight (or a compatible client), connect to the PC, and select the new "XBOX Mode" application. The stream
+should start and XBOX mode should automatically be activated. After disconnecting and quitting, the PC should
+automatically revert back to desktop mode.
 
-In this example, we're passing the option to wait for the session to be unlocked first, giving us a chance to unlock
-the PC after starting the stream instead of immediately failing. But because Sunshine waits for the commands to
-complete before connecting, we're runing the command without waiting for it to finish with `cmd /c "start """" ...`
-instead of directly.
+> **Note:** Sunshine waits for these prep commands to complete successfully before continuing. This causes it to appear
+to hang when the `-w` option is used since it's waiting for the lock screen to be dismissed. To get around this, the
+prep commands execute with `cmd /c "start """"...` in order to not wait for command completion.
+
 
 ## Building
 ### Prerequisites
