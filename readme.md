@@ -22,7 +22,15 @@ XboxModeCli [--version]
 
   Show version information.
 
+### Status
+Shows the current status of XBOX mode.
+```
+XboxModeCli status
+```
+
 ### Activate
+Activates XBOX mode.
+
 ```
 XboxModeCli activate [-m|--movePointer] [-w|--waitForSessionUnlock] [-t|--waitTimeout <seconds>]
 ```
@@ -47,9 +55,11 @@ XboxModeCli activate [-m|--movePointer] [-w|--waitForSessionUnlock] [-t|--waitTi
   sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in
   this CLI and is likely to be removed in the future.
 
-### Activate
+### Deactivate
+Deactivates XBOX mode.
+
 ```
-XboxModeCli activate [-m|--movePointer] [-w|--waitForSessionUnlock] [-t|--waitTimeout <seconds>]
+XboxModeCli deactivate [-m|--movePointer] [-w|--waitForSessionUnlock] [-t|--waitTimeout <seconds>]
 ```
 #### Options
 - `-e|--exit`

@@ -9,9 +9,7 @@ namespace MrCapitalQ.XboxModeCli;
 
 internal class XboxModeHelper
 {
-    public static async Task<bool> SetXboxModeAsync(bool isActive,
-        bool movePointerOffscreen,
-        CancellationToken cancellationToken = default)
+    public static async Task<bool> SetXboxModeAsync(bool isActive, CancellationToken cancellationToken = default)
     {
         if (await IsXboxModeAsync(cancellationToken) == isActive)
         {
