@@ -8,7 +8,16 @@ mode (formerly Full Screen Experience). Unfortunately, there's no documented way
 XBOX mode. This can be useful when game streaming to a mobile device or when using an existing desktop PC on
 a TV part-time. This project aims provide a way to non-interactively control XBOX mode.
 
-## Commands
+## Features
+- Check whether the XBOX mode is currently active.
+- Switch in and out of XBOX mode deterministically with retries.
+- Pre-compiled releases are published with .NET Native AOT for performance benefits.
+
+> **Note:** This does not include a way to enable the _availability_ of XBOX mode on a system. As it is a gradual
+rollout, everyone should eventually get it on supported versions of Windows 11. There are also tools available that
+can be used to forcibly enable it.
+
+## Usage
 ```
 XboxModeCli [-?|-h|--help]
 XboxModeCli [--version]
@@ -22,13 +31,13 @@ XboxModeCli [--version]
 
   Show version information.
 
-### Status
+### Status Command
 Shows the current status of XBOX mode.
 ```
 XboxModeCli status
 ```
 
-### Activate
+### Activate Command
 Activates XBOX mode.
 
 ```
@@ -55,7 +64,7 @@ XboxModeCli activate [-m|--movePointer] [-w|--waitForSessionUnlock] [-t|--waitTi
   sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in
   this CLI and is likely to be removed in the future.
 
-### Deactivate
+### Deactivate Command
 Deactivates XBOX mode.
 
 ```
@@ -84,12 +93,12 @@ XboxModeCli deactivate [-m|--movePointer] [-w|--waitForSessionUnlock] [-t|--wait
 ## Examples
 
 ### Moonlight & Sunshine Game Streaming
-Get an XBOX handheld-like experience by setting up game streaming service that loads directly into XBOX mode. This can
-be achieved with a mobile device, a telescoping controller, and Sunshine configured with prep commands to activate XBOX
-mode automatically while streaming.
+Get an XBOX handheld-like experience by setting up a game streaming service that loads directly into XBOX mode. This
+can achieved with a mobile device, a telescoping controller, and Sunshine configured with prep commands to activate
+XBOX mode automatically while streaming.
 
 1. Download a copy of the XboxModeCli executable from the releases and save it somewhere.
-2. In Sunshine, create a new application and call it "XBOX Mode".
+2. In Sunshine (or ideally, one of its forks with virtual displays), create a new application and call it "XBOX Mode".
 3. Add a new set of prep commands for this application. Update `<path_to>` to point it to the location of the
 executable saved in step 1.
 
