@@ -80,6 +80,12 @@ await rootCommand.Parse(args).InvokeAsync();
 
 async Task<int> SetXboxModeAction(ParseResult parseResult, bool isActive, CancellationToken cancellationToken)
 {
+    if (isActive == await XboxModeHelper.IsXboxModeAsync(cancellationToken))
+    {
+        Console.WriteLine($"XBOX mode is already {(isActive ? "activated" : "deactivated")}. No action needed.");
+        return 0;
+    }
+
     if (parseResult.GetValue(waitForSessionUnlockOption))
     {
         Console.WriteLine("Checking if session is locked.");
