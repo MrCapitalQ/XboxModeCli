@@ -71,8 +71,8 @@ XboxModeCli activate
 
 - `--postCommandActionDelay <milliseconds>`
 
-  Sets how many milliseconds to wait before executing post-command actions like closing the XBOX app. Default is 1000
-  (1 second) when not set.
+  Sets how many milliseconds to wait before executing post-command actions moving the mouse pointer or like closing the
+  XBOX app. Default is 1000 (1 second) when not set.
 
 ### Deactivate Command
 Deactivates XBOX mode.
@@ -106,8 +106,8 @@ XboxModeCli deactivate
 
 - `--postCommandActionDelay <milliseconds>`
 
-  Sets how many milliseconds to wait before executing post-command actions like closing the XBOX app. Default is 3000
-  (3 seconds) when not set.
+  Sets how many milliseconds to wait before executing post-command actions moving the mouse pointer or like closing the
+  XBOX app. Default is 1000 (1 second) when not set.
 
 ## Examples
 

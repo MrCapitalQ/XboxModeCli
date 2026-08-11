@@ -45,7 +45,7 @@ var closeSettingsAppOption = new Option<bool>("--closeSettingsApp")
 
 var postCommandDelayOption = new Option<long>("--postCommandActionDelay")
 {
-    Description = $"Sets how many milliseconds to wait before executing post-command actions like closing the XBOX app. Default is {DefaultPostCommandDelayMs} (1 second) when not set.",
+    Description = $"Sets how many milliseconds to wait before executing post-command actions like moving the mouse pointer or closing the XBOX app. Default is {DefaultPostCommandDelayMs} (1 second) when not set.",
     HelpName = "milliseconds",
     DefaultValueFactory = _ => DefaultPostCommandDelayMs
 };
@@ -125,25 +125,24 @@ async Task<int> SetXboxModeAction(ParseResult parseResult, bool isActive, Cancel
 
     var isSuccessful = await XboxModeHelper.SetXboxModeAsync(isActive, cancellationToken);
 
-    if (isSuccessful
-        && isActive
-        && parseResult.GetValue(movePointerOption)
-        && await XboxModeHelper.GetXboxModeInfoAsync(cancellationToken) is { } xboxModeInfo)
-    {
-        Console.WriteLine("Moving mouse pointer offscreen.");
-        PInvoke.SetCursorPos(xboxModeInfo.MonitorSize.Width, xboxModeInfo.MonitorSize.Height);
-    }
-
-    var shouldCloseXboxApp = isSuccessful && !isActive && parseResult.GetValue(exitXboxAppOption);
-    var shouldCloseSettingsApp = isSuccessful && parseResult.GetValue(closeSettingsAppOption);
     if (!isSuccessful)
         return 1;
 
-    if (shouldCloseXboxApp || shouldCloseSettingsApp)
+    var shouldMoveMouse = isActive && parseResult.GetValue(movePointerOption);
+    var shouldCloseXboxApp = !isActive && parseResult.GetValue(exitXboxAppOption);
+    var shouldCloseSettingsApp = parseResult.GetValue(closeSettingsAppOption);
+
+    if (shouldMoveMouse || shouldCloseXboxApp || shouldCloseSettingsApp)
     {
         var postCommandDelay = TimeSpan.FromMilliseconds(parseResult.GetRequiredValue(postCommandDelayOption));
         Console.WriteLine($"Waiting {postCommandDelay.TotalSeconds} seconds before post command actions.");
         await Task.Delay(postCommandDelay, cancellationToken);
+    }
+
+    if (shouldMoveMouse && await XboxModeHelper.GetXboxModeInfoAsync(cancellationToken) is { } xboxModeInfo)
+    {
+        Console.WriteLine("Moving mouse pointer offscreen.");
+        PInvoke.SetCursorPos(xboxModeInfo.MonitorSize.Width, xboxModeInfo.MonitorSize.Height);
     }
 
     if (shouldCloseXboxApp)
