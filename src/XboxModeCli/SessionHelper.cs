@@ -15,7 +15,7 @@ internal class SessionHelper
             return Task.CompletedTask;
         }
 
-        Console.WriteLine("Session is locked. Waiting for session unlock by user.");
+        Console.WriteLine($"Session is locked. Waiting for session unlock by user with a timeout of {timeout}.");
 
         var tcs = new TaskCompletionSource();
         void SystemEvents_SessionSwitch(object sender, SessionSwitchEventArgs e)
