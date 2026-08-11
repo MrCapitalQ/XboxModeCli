@@ -42,72 +42,52 @@ Activates XBOX mode.
 
 ```
 XboxModeCli activate
-    [-m|--movePointer]
-    [-w|--waitForSessionUnlock]
-    [-t|--waitTimeout
-    <milliseconds>]
-    [--postCommandActionDelay <milliseconds>]
+    [-m|--movePointer <delayInSeconds>]
+    [-w|--waitForSessionUnlock <timeoutInSeconds>]
 ```
 #### Options
-- `-m|--movePointer`
+- `-m|--movePointer <delayInSeconds>`
 
-  Move the mouse pointer offscreen if XBOX mode activation is successful. This is useful in avoiding having the mouse
-  pointer being stuck in the middle of the screen when primarily using gamepad inputs.
+  Move the mouse pointer offscreen if XBOX mode activation is successful. If the `<delayInSeconds>` argument is
+  omitted, the mouse pointer will be moved immediately after XBOX mode is activated.
 
-- `-w|--waitForSessionUnlock`
+- `-w|--waitForSessionUnlock <timeoutInSeconds>`
 
-  Waits for the current user session to be unlocked first otherwise the command will fail if the session is currently
-  locked.
+  Wait for the current user session to be unlocked first before executing the command. If the `<timeoutInSeconds>`
+  argument is omitted, a default timeout of 300 seconds (5 minutes) is used.
 
-- `-t|--waitTimeout <milliseconds>`
-
-  Sets how many milliseconds to wait for the session to be unlocked. Default is 300000 (5 minutes) when not set.
-
-- `--closeSettingsApp`
+- `--closeSettingsApp <delayInSeconds>`
 
   Close the Settings app if it's open. This is a hacky workaround for a bug where switching in and out of XBOX mode can
   sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in
-  this CLI and is likely to be removed in the future.
-
-- `--postCommandActionDelay <milliseconds>`
-
-  Sets how many milliseconds to wait before executing post-command actions moving the mouse pointer or like closing the
-  XBOX app. Default is 1000 (1 second) when not set.
+  this CLI and is likely to be removed in the future. If the `<delayInSeconds>` argument is omitted, a default delay of
+  1 second will be used before closing the Settings app.
 
 ### Deactivate Command
 Deactivates XBOX mode.
 
 ```
 XboxModeCli deactivate
-    [-e|--exit]
-    [-w|--waitForSessionUnlock]
-    [-t|--waitTimeout <milliseconds>]
-    [--postCommandActionDelay <milliseconds>]
+    [-e|--exit <delayInSeconds>]
+    [-w|--waitForSessionUnlock <timeoutInSeconds>]
 ```
 #### Options
-- `-e|--exit`
+- `-e|--exit <delayInSeconds>`
 
-  Exit and close the XBOX app if XBOX mode deactivation is successful.
+  Exit and close the XBOX app if XBOX mode deactivation is successful. If the `<delayInSeconds>` argument is omitted,
+  a default delay of 1 second will be used before closing the XBOX app after XBOX mode is deactivated.
+  
+- `-w|--waitForSessionUnlock <timeoutInSeconds>`
 
-- `-w|--waitForSessionUnlock`
+  Wait for the current user session to be unlocked first before executing the command. If the `<timeoutInSeconds>`
+  argument is omitted, a default timeout of 300 seconds (5 minutes) is used.
 
-  Waits for the current user session to be unlocked first otherwise the command will fail if the session is currently
-  locked.
-
-- `-t|--waitTimeout <milliseconds>`
-
-  Sets how many milliseconds to wait for the session to be unlocked. Default is 300000 (5 minutes) when not set.
-
-- `--closeSettingsApp`
+- `--closeSettingsApp <delayInSeconds>`
 
   Close the Settings app if it's open. This is a hacky workaround for a bug where switching in and out of XBOX mode can
   sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in
-  this CLI and is likely to be removed in the future.
-
-- `--postCommandActionDelay <milliseconds>`
-
-  Sets how many milliseconds to wait before executing post-command actions moving the mouse pointer or like closing the
-  XBOX app. Default is 1000 (1 second) when not set.
+  this CLI and is likely to be removed in the future. If the `<delayInSeconds>` argument is omitted, a default delay of
+  1 second will be used before closing the Settings app.
 
 ## Examples
 
