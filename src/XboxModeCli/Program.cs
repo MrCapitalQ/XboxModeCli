@@ -3,6 +3,10 @@ using System.CommandLine;
 using System.Diagnostics;
 using Windows.Win32;
 
+const long DefaultWaitTimeoutMs = 300000;
+const long DefaultPostCommandDelayMs = 1000;
+
+
 var rootCommand = new RootCommand("Xbox Mode CLI is a command line interface used to interact with Windows 11's XBOX mode.");
 
 var waitForSessionUnlockOption = new Option<bool>("--waitForSessionUnlock", "-w")
@@ -10,14 +14,15 @@ var waitForSessionUnlockOption = new Option<bool>("--waitForSessionUnlock", "-w"
     Description = "Waits for the current user session to be unlocked first otherwise the command will fail if the session is currently locked."
 };
 
-var waitForSessionUnlockTimeoutOption = new Option<int>("--waitTimeout", "-t")
+var waitForSessionUnlockTimeoutOption = new Option<long>("--waitTimeout", "-t")
 {
-    Description = "Sets how many seconds to wait for the session to be unlocked. Default is 300 when not set.",
-    DefaultValueFactory = _ => 300
+    Description = $"Sets how many milliseconds to wait for the session to be unlocked. Default is {DefaultWaitTimeoutMs} (5 minutes) when not set.",
+    HelpName = "milliseconds",
+    DefaultValueFactory = _ => DefaultWaitTimeoutMs
 };
 waitForSessionUnlockTimeoutOption.Validators.Add(result =>
 {
-    if (result.GetValueOrDefault<int>() < 0)
+    if (result.GetValueOrDefault<long>() < 0)
     {
         result.AddError("Wait for session unlock timeout must be non-negative");
     }
@@ -38,6 +43,20 @@ var closeSettingsAppOption = new Option<bool>("--closeSettingsApp")
     Description = "Close the Settings app if it's open. This is a hacky workaround for a bug where switching in and out of XBOX mode can sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in this CLI and is likely to be removed in the future."
 };
 
+var postCommandDelayOption = new Option<long>("--postCommandActionDelay")
+{
+    Description = $"Sets how many milliseconds to wait before executing post-command actions like moving the mouse pointer or closing the XBOX app. Default is {DefaultPostCommandDelayMs} (1 second) when not set.",
+    HelpName = "milliseconds",
+    DefaultValueFactory = _ => DefaultPostCommandDelayMs
+};
+postCommandDelayOption.Validators.Add(result =>
+{
+    if (result.GetValueOrDefault<long>() < 0)
+    {
+        result.AddError("Post-command action delay must be non-negative");
+    }
+});
+
 var statusCommand = new Command("status", "Shows the current status of XBOX mode.");
 statusCommand.SetAction(async (parseResult, cancellationToken) =>
 {
@@ -51,7 +70,8 @@ var activateCommand = new Command("activate", "Activates XBOX mode.")
     movePointerOption,
     waitForSessionUnlockOption,
     waitForSessionUnlockTimeoutOption,
-    closeSettingsAppOption
+    closeSettingsAppOption,
+    postCommandDelayOption
 };
 activateCommand.SetAction(async (parseResult, cancellationToken) =>
 {
@@ -64,7 +84,8 @@ var deactivateCommand = new Command("deactivate", "Deactivates XBOX mode.")
     exitXboxAppOption,
     waitForSessionUnlockOption,
     waitForSessionUnlockTimeoutOption,
-    closeSettingsAppOption
+    closeSettingsAppOption,
+    postCommandDelayOption
 };
 deactivateCommand.SetAction(async (parseResult, cancellationToken) =>
 {
@@ -104,16 +125,27 @@ async Task<int> SetXboxModeAction(ParseResult parseResult, bool isActive, Cancel
 
     var isSuccessful = await XboxModeHelper.SetXboxModeAsync(isActive, cancellationToken);
 
-    if (isSuccessful
-        && isActive
-        && parseResult.GetValue(movePointerOption)
-        && await XboxModeHelper.GetXboxModeInfoAsync(cancellationToken) is { } xboxModeInfo)
+    if (!isSuccessful)
+        return 1;
+
+    var shouldMoveMouse = isActive && parseResult.GetValue(movePointerOption);
+    var shouldCloseXboxApp = !isActive && parseResult.GetValue(exitXboxAppOption);
+    var shouldCloseSettingsApp = parseResult.GetValue(closeSettingsAppOption);
+
+    if (shouldMoveMouse || shouldCloseXboxApp || shouldCloseSettingsApp)
+    {
+        var postCommandDelay = TimeSpan.FromMilliseconds(parseResult.GetRequiredValue(postCommandDelayOption));
+        Console.WriteLine($"Waiting {postCommandDelay.TotalSeconds} seconds before post command actions.");
+        await Task.Delay(postCommandDelay, cancellationToken);
+    }
+
+    if (shouldMoveMouse && await XboxModeHelper.GetXboxModeInfoAsync(cancellationToken) is { } xboxModeInfo)
     {
         Console.WriteLine("Moving mouse pointer offscreen.");
         PInvoke.SetCursorPos(xboxModeInfo.MonitorSize.Width, xboxModeInfo.MonitorSize.Height);
     }
 
-    if (isSuccessful && !isActive && parseResult.GetValue(exitXboxAppOption))
+    if (shouldCloseXboxApp)
     {
         Console.WriteLine("Closing the XBOX app...");
         foreach (var process in Process.GetProcessesByName("XboxPcApp"))
@@ -122,7 +154,7 @@ async Task<int> SetXboxModeAction(ParseResult parseResult, bool isActive, Cancel
         }
     }
 
-    if (parseResult.GetValue(closeSettingsAppOption))
+    if (shouldCloseSettingsApp)
     {
         Console.WriteLine("Closing the Settings app...");
         foreach (var process in Process.GetProcessesByName("SystemSettings"))
@@ -131,5 +163,5 @@ async Task<int> SetXboxModeAction(ParseResult parseResult, bool isActive, Cancel
         }
     }
 
-    return isSuccessful ? 0 : 1;
+    return 0;
 }

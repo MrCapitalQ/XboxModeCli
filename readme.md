@@ -41,7 +41,12 @@ XboxModeCli status
 Activates XBOX mode.
 
 ```
-XboxModeCli activate [-m|--movePointer] [-w|--waitForSessionUnlock] [-t|--waitTimeout <seconds>]
+XboxModeCli activate
+    [-m|--movePointer]
+    [-w|--waitForSessionUnlock]
+    [-t|--waitTimeout
+    <milliseconds>]
+    [--postCommandActionDelay <milliseconds>]
 ```
 #### Options
 - `-m|--movePointer`
@@ -54,9 +59,9 @@ XboxModeCli activate [-m|--movePointer] [-w|--waitForSessionUnlock] [-t|--waitTi
   Waits for the current user session to be unlocked first otherwise the command will fail if the session is currently
   locked.
 
-- `-t|--waitTimeout <seconds>`
+- `-t|--waitTimeout <milliseconds>`
 
-  Sets how many seconds to wait for the session to be unlocked. Default is 300 when not set.
+  Sets how many milliseconds to wait for the session to be unlocked. Default is 300000 (5 minutes) when not set.
 
 - `--closeSettingsApp`
 
@@ -64,11 +69,20 @@ XboxModeCli activate [-m|--movePointer] [-w|--waitForSessionUnlock] [-t|--waitTi
   sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in
   this CLI and is likely to be removed in the future.
 
+- `--postCommandActionDelay <milliseconds>`
+
+  Sets how many milliseconds to wait before executing post-command actions moving the mouse pointer or like closing the
+  XBOX app. Default is 1000 (1 second) when not set.
+
 ### Deactivate Command
 Deactivates XBOX mode.
 
 ```
-XboxModeCli deactivate [-m|--movePointer] [-w|--waitForSessionUnlock] [-t|--waitTimeout <seconds>]
+XboxModeCli deactivate
+    [-e|--exit]
+    [-w|--waitForSessionUnlock]
+    [-t|--waitTimeout <milliseconds>]
+    [--postCommandActionDelay <milliseconds>]
 ```
 #### Options
 - `-e|--exit`
@@ -80,15 +94,20 @@ XboxModeCli deactivate [-m|--movePointer] [-w|--waitForSessionUnlock] [-t|--wait
   Waits for the current user session to be unlocked first otherwise the command will fail if the session is currently
   locked.
 
-- `-t|--waitTimeout <seconds>`
+- `-t|--waitTimeout <milliseconds>`
 
-  Sets how many seconds to wait for the session to be unlocked. Default is 300 when not set.
+  Sets how many milliseconds to wait for the session to be unlocked. Default is 300000 (5 minutes) when not set.
 
 - `--closeSettingsApp`
 
   Close the Settings app if it's open. This is a hacky workaround for a bug where switching in and out of XBOX mode can
   sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in
   this CLI and is likely to be removed in the future.
+
+- `--postCommandActionDelay <milliseconds>`
+
+  Sets how many milliseconds to wait before executing post-command actions moving the mouse pointer or like closing the
+  XBOX app. Default is 1000 (1 second) when not set.
 
 ## Examples
 
@@ -104,8 +123,8 @@ executable saved in step 1.
 
    | Action | Command |
    |--------|---------|
-   | Do     | `cmd /c "start """" ""<path_to>\XboxModeCli.exe"" activate -m -w"` |
-   | Undo   | `cmd /c "start """" ""<path_to>\XboxModeCli.exe"" deactivate -e -w"` |
+   | Do     | `cmd /c "start /b cmd /c ""<path_to>\XboxModeCli.exe"" activate -m -w"` |
+   | Undo   | `cmd /c "start /b cmd /c ""<path_to>\XboxModeCli.exe"" deactivate -e -w"` |
 
 3. Open Moonlight (or a compatible client), connect to the PC, and select the new "XBOX Mode" application. The stream
 should start and XBOX mode should automatically be activated. After disconnecting and quitting, the PC should
@@ -113,7 +132,7 @@ automatically revert back to desktop mode.
 
 > **Note:** Sunshine waits for these prep commands to complete successfully before continuing. This causes it to appear
 to hang when the `-w` option is used since it's waiting for the lock screen to be dismissed. To get around this, the
-prep commands execute with `cmd /c "start """"...` in order to not wait for command completion.
+prep commands execute with `cmd /c "start /b cmd /c ...` in order to not wait for command completion.
 
 
 ## Building
