@@ -42,49 +42,52 @@ Activates XBOX mode.
 
 ```
 XboxModeCli activate
-    [-m|--movePointer <delayInMilliseconds>]
-    [-w|--waitForSessionUnlock <timeoutInMilliseconds>]
+    [-m|--movePointer <delayInSeconds>]
+    [-w|--waitForSessionUnlock <timeoutInSeconds>]
 ```
 #### Options
-- `-m|--movePointer <delayInMilliseconds>`
+- `-m|--movePointer <delayInSeconds>`
 
-  Move the mouse pointer offscreen if XBOX mode activation is successful. This is useful in avoiding having the mouse
-  pointer being stuck in the middle of the screen when primarily using gamepad inputs.
+  Move the mouse pointer offscreen if XBOX mode activation is successful. If the `<delayInSeconds>` argument is
+  omitted, the mouse pointer will be moved immediately after XBOX mode is activated.
 
-- `-w|--waitForSessionUnlock <timeoutInMilliseconds>`
+- `-w|--waitForSessionUnlock <timeoutInSeconds>`
 
-  Waits for the current user session to be unlocked first otherwise the command will fail if the session is currently
-  locked.
+  Wait for the current user session to be unlocked first before executing the command. If the `<timeoutInSeconds>`
+  argument is omitted, a default timeout of 300 seconds (5 minutes) is used.
 
-- `--closeSettingsApp <delayInMilliseconds>`
+- `--closeSettingsApp <delayInSeconds>`
 
   Close the Settings app if it's open. This is a hacky workaround for a bug where switching in and out of XBOX mode can
   sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in
-  this CLI and is likely to be removed in the future.
+  this CLI and is likely to be removed in the future. If the `<delayInSeconds>` argument is omitted, a default delay of
+  1 second will be used before closing the Settings app.
 
 ### Deactivate Command
 Deactivates XBOX mode.
 
 ```
 XboxModeCli deactivate
-    [-e|--exit <delayInMilliseconds>]
-    [-w|--waitForSessionUnlock <timeoutInMilliseconds>]
+    [-e|--exit <delayInSeconds>]
+    [-w|--waitForSessionUnlock <timeoutInSeconds>]
 ```
 #### Options
-- `-e|--exit <delayInMilliseconds>`
+- `-e|--exit <delayInSeconds>`
 
-  Exit and close the XBOX app if XBOX mode deactivation is successful.
+  Exit and close the XBOX app if XBOX mode deactivation is successful. If the `<delayInSeconds>` argument is omitted,
+  a default delay of 1 second will be used before closing the XBOX app after XBOX mode is deactivated.
   
-- `-w|--waitForSessionUnlock <timeoutInMilliseconds>`
+- `-w|--waitForSessionUnlock <timeoutInSeconds>`
 
-  Waits for the current user session to be unlocked first otherwise the command will fail if the session is currently
-  locked.
+  Wait for the current user session to be unlocked first before executing the command. If the `<timeoutInSeconds>`
+  argument is omitted, a default timeout of 300 seconds (5 minutes) is used.
 
-- `--closeSettingsApp <delayInMilliseconds>`
+- `--closeSettingsApp <delayInSeconds>`
 
   Close the Settings app if it's open. This is a hacky workaround for a bug where switching in and out of XBOX mode can
   sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in
-  this CLI and is likely to be removed in the future.
+  this CLI and is likely to be removed in the future. If the `<delayInSeconds>` argument is omitted, a default delay of
+  1 second will be used before closing the Settings app.
 
 ## Examples
 

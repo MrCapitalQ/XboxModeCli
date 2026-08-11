@@ -13,7 +13,8 @@ var rootCommand = new RootCommand("Xbox Mode CLI is a command line interface use
 
 var waitForSessionUnlockOption = new Option<double?>("--waitForSessionUnlock", "-w")
 {
-    Description = "Waits for the current user session to be unlocked first otherwise the command will fail if the session is currently locked.",
+    Description = "Wait for the current user session to be unlocked first before executing the command. If the <timeoutInSeconds> argument is omitted, a default timeout of 300 seconds (5 minutes) is used.",
+    HelpName = "timeoutInSeconds",
     Arity = ArgumentArity.ZeroOrOne,
     DefaultValueFactory = result => result.Parent is OptionResult { IdentifierTokenCount: > 0 }
         ? DefaultWaitTimeoutSeconds
@@ -29,7 +30,8 @@ waitForSessionUnlockOption.Validators.Add(result =>
 
 var movePointerOption = new Option<double?>("--movePointer", "-m")
 {
-    Description = "Move the mouse pointer offscreen if XBOX mode activation is successful. This is useful in avoiding having the mouse pointer being stuck in the middle of the screen when primarily using gamepad inputs.",
+    Description = "Move the mouse pointer offscreen if XBOX mode activation is successful. If the <delayInSeconds> argument is omitted, the mouse pointer will be moved immediately after XBOX mode is activated.",
+    HelpName = "delayInSeconds",
     Arity = ArgumentArity.ZeroOrOne,
     DefaultValueFactory = result => result.Parent is OptionResult { IdentifierTokenCount: > 0 }
         ? DefaultMouseMoveDelaySeconds
@@ -45,7 +47,8 @@ movePointerOption.Validators.Add(result =>
 
 var exitXboxAppOption = new Option<double?>("--exit", "-e")
 {
-    Description = "Exit and close the XBOX app if XBOX mode deactivation is successful.",
+    Description = "Exit and close the XBOX app if XBOX mode deactivation is successful. If the <delayInSeconds> argument is omitted, a default delay of 1 second will be used before closing the XBOX app after XBOX mode is deactivated.",
+    HelpName = "delayInSeconds",
     Arity = ArgumentArity.ZeroOrOne,
     DefaultValueFactory = result => result.Parent is OptionResult { IdentifierTokenCount: > 0 }
         ? DefaultAppCloseDelaySeconds
@@ -61,7 +64,8 @@ exitXboxAppOption.Validators.Add(result =>
 
 var closeSettingsAppOption = new Option<double?>("--closeSettingsApp")
 {
-    Description = "Close the Settings app if it's open. This is a hacky workaround for a bug where switching in and out of XBOX mode can sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in this CLI and is likely to be removed in the future.",
+    Description = "Close the Settings app if it's open. This is a hacky workaround for a bug where switching in and out of XBOX mode can sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in this CLI and is likely to be removed in the future. If the <delayInSeconds> argument is omitted, a default delay of 1 second will be used before closing the Settings app.",
+    HelpName = "delayInSeconds",
     Arity = ArgumentArity.ZeroOrOne,
     DefaultValueFactory = result => result.Parent is OptionResult { IdentifierTokenCount: > 0 }
         ? DefaultAppCloseDelaySeconds
