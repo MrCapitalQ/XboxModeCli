@@ -103,8 +103,8 @@ executable saved in step 1.
 
    | Action | Command |
    |--------|---------|
-   | Do     | `cmd /c "start /b cmd /c ""<path_to>\XboxModeCli.exe"" activate -m -w"` |
-   | Undo   | `cmd /c "start /b cmd /c ""<path_to>\XboxModeCli.exe"" deactivate -e -w"` |
+   | Do     | `cmd.exe /c start /min "" "<path_to>\XboxModeCli.exe" activate -m -w` |
+   | Undo   | `cmd.exe /c start /min "" "<path_to>\XboxModeCli.exe" deactivate -e -w` |
 
 3. Open Moonlight (or a compatible client), connect to the PC, and select the new "XBOX Mode" application. The stream
 should start and XBOX mode should automatically be activated. After disconnecting and quitting, the PC should
@@ -112,7 +112,7 @@ automatically revert back to desktop mode.
 
 > **Note:** Sunshine waits for these prep commands to complete successfully before continuing. This causes it to appear
 to hang when the `-w` option is used since it's waiting for the lock screen to be dismissed. To get around this, the
-prep commands execute with `cmd /c "start /b cmd /c ...` in order to not wait for command completion.
+prep commands execute with `cmd.exe /c start /min "" ...` in order to not wait for command completion.
 
 
 ## Building
