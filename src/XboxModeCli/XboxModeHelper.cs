@@ -19,7 +19,7 @@ internal class XboxModeHelper
 
         var maxAttempts = 5;
         var attempt = 0;
-        while (true)
+        while (!cancellationToken.IsCancellationRequested)
         {
             Console.WriteLine($"{(isActive ? "Activating" : "Deactivating")} XBOX mode (attempt {attempt + 1} of {maxAttempts}).");
             await ToggleXboxModeAsync(cancellationToken);

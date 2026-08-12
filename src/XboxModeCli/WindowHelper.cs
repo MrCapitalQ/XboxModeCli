@@ -40,13 +40,13 @@ internal static class WindowHelper
         }, cancellationToken);
     }
 
-    public static async Task<bool> IsWindowRelatedToProcessAsync(nint windowHandle, Process process)
+    public static async Task<bool> IsWindowRelatedToProcessAsync(nint windowHandle, Process process, CancellationToken cancellationToken = default)
     {
         _ = PInvoke.GetWindowThreadProcessId(new(windowHandle), out var windowProcessId);
         var windowProcess = Process.GetProcessById((int)windowProcessId);
         if (ApplicationFrameHostProcessName.Equals(windowProcess.ProcessName, StringComparison.OrdinalIgnoreCase))
         {
-            var childWindows = await GetChildWindowIdsAsync(windowHandle);
+            var childWindows = await GetChildWindowIdsAsync(windowHandle, cancellationToken);
             foreach (var childWindow in childWindows)
             {
                 _ = PInvoke.GetWindowThreadProcessId(new(childWindow), out var childWindowProcessId);
