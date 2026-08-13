@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - '!v*.*.*-*'
+
+jobs:
+  setup:
+    name: Setup
+    uses: ./.github/workflows/setup-publish.yml
+    with:
+      PREVIOUS_TAG_PATTERN: "v*.*.*"
+
+  build:
+    name: Build
+    needs: setup
+    uses: ./.github/workflows/build.yml
+    with:
+      UPLOAD_ARTIFACTS: true
+      VERSION: ${{ needs.setup.outputs.version }}
+
+  publish:
+    name: Publish
+    needs:
+      - setup
+      - build
+    uses: ./.github/workflows/publish.yml
+    with:
+      IS_PRERELEASE: false
+      PREVIOUS_TAG: ${{ needs.setup.outputs.previous_tag }}
+    permissions:
+      contents: write
+    secrets: inherit
