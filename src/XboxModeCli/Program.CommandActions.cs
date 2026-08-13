@@ -10,6 +10,7 @@ internal static class CommandActions
         bool isActive,
         CancellationToken cancellationToken)
     {
+        await Task.Delay(3000);
         cancellationToken = await CreateMultiInstanceCancellationAsync(cancellationToken);
 
         Console.WriteLine($"{(isActive ? "Activating" : "Deactivating")} XBOX mode...");
@@ -53,6 +54,8 @@ internal static class CommandActions
                     {
                         PInvoke.SetCursorPos(xboxModeInfo.MonitorSize.Width, xboxModeInfo.MonitorSize.Height);
                     }
+
+                    return Task.CompletedTask;
                 },
                 movePointerDelay,
                 $"Waiting {movePointerDelay} before moving mouse pointer offscreen.",
@@ -62,12 +65,12 @@ internal static class CommandActions
         if (!isActive && parseResult.GetValue(CommandOptions.ExitXboxAppOption) is { } exitXboxAppDelayMs)
         {
             var exitXboxAppDelay = TimeSpan.FromSeconds(exitXboxAppDelayMs);
-            postCommandTasks.Add(ExecuteActionWithDelayAsync(() =>
+            postCommandTasks.Add(ExecuteActionWithDelayAsync(async () =>
                 {
                     Console.WriteLine("Closing the XBOX app...");
-                    foreach (var process in Process.GetProcessesByName("XboxPcApp"))
+                    foreach (var windowHandle in await XboxModeHelper.GetXboxAppWindowsAsync(cancellationToken))
                     {
-                        process.CloseMainWindow();
+                        PInvoke.PostMessage(new(windowHandle), PInvoke.WM_CLOSE, 0, 0);
                     }
                 },
                 exitXboxAppDelay,
@@ -85,6 +88,8 @@ internal static class CommandActions
                     {
                         process.Kill();
                     }
+
+                    return Task.CompletedTask;
                 },
                 exitSettingsAppDelay,
                 $"Waiting {exitSettingsAppDelay} before closing the Settings app.",
@@ -96,7 +101,7 @@ internal static class CommandActions
         return 0;
     }
 
-    private static async Task ExecuteActionWithDelayAsync(Action action,
+    private static async Task ExecuteActionWithDelayAsync(Func<Task> func,
         TimeSpan delay,
         string delayMessage,
         CancellationToken cancellationToken = default)
@@ -107,7 +112,7 @@ internal static class CommandActions
             await Task.Delay(delay, cancellationToken);
         }
 
-        action();
+        await func();
     }
 
     private static async Task<CancellationToken> CreateMultiInstanceCancellationAsync(CancellationToken originalCancellationToken = default)

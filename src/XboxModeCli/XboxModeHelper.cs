@@ -59,32 +59,47 @@ internal class XboxModeHelper
 
     public static async Task<XboxModeInfo?> GetXboxModeInfoAsync(CancellationToken cancellationToken = default)
     {
+        var windows = await GetXboxAppWindowsAsync(cancellationToken);
+        foreach (var windowHandle in windows)
+        {
+            // If the XBOX window is the same size as the monitor it's on, then assume it to be in XBOX mode. This does
+            // not result in a false positive it's in fullscreen mode (via regular F11) because it doesn't seem to be
+            // a top-level window.
+            if (PInvoke.GetWindowRect(new(windowHandle), out var windowRect))
+            {
+                var monitorHandle = PInvoke.MonitorFromWindow(new(windowHandle), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
+                var monitorSize = GetMonitorSize(monitorHandle);
+
+                if (monitorSize.HasValue && windowRect.Size == monitorSize)
+                    return new XboxModeInfo(windowHandle, monitorHandle, monitorSize.Value);
+            }
+        }
+
+        return null;
+    }
+
+    public static async Task<IEnumerable<nint>> GetXboxAppWindowsAsync(CancellationToken cancellationToken = default)
+    {
+        var result = new List<nint>();
+
         // The main UI window of the XBOX app can be either the main window of the process or a window presented by the
-        // ApplicationFrameHost process but should always relate back to the XboxPcApp process. 
-        var processes = Process.GetProcessesByName("XboxPcApp");
-        foreach (var process in processes)
+        // ApplicationFrameHost process but should always relate back to the XboxPcApp process.
+        foreach (var process in Process.GetProcessesByName("XboxPcApp"))
         {
             // Get all top-level windows and check if any of them are related to the XboxPcApp process and are in
             // full-screen mode by comparing the size.
             var windows = await WindowHelper.GetTopLevelWindowIdsAsync(cancellationToken);
             foreach (var windowHandle in windows)
             {
-                if (!await WindowHelper.IsWindowRelatedToProcessAsync(windowHandle, process)
+                if (!await WindowHelper.IsWindowRelatedToProcessAsync(windowHandle, process, cancellationToken)
                     || !PInvoke.IsWindowVisible(new(windowHandle)))
                     continue;
 
-                if (PInvoke.GetWindowRect(new(windowHandle), out var windowRect))
-                {
-                    var monitorHandle = PInvoke.MonitorFromWindow(new(windowHandle), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-                    var monitorSize = GetMonitorSize(monitorHandle);
-
-                    if (monitorSize.HasValue && windowRect.Size == monitorSize)
-                        return new XboxModeInfo(windowHandle, monitorHandle, monitorSize.Value);
-                }
+                result.Add(windowHandle);
             }
         }
 
-        return null;
+        return result.AsReadOnly();
     }
 
     private unsafe static Size? GetMonitorSize(nint monitorHandle)
