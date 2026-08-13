@@ -37,10 +37,10 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
           # TODO: Remove
-          git tag --list $env:SOURCE
-          git tag --list '$env:SOURCE'
+          git tag --list $env:PREVIOUS_TAG_PATTERN
+          git tag --list '$env:PREVIOUS_TAG_PATTERN'
 
-          PREVIOUS_TAG="$(git tag --list '$env:SOURCE' --sort=-v:refname | grep -Fvx "$TAG" | head -n 1 || true)"
+          PREVIOUS_TAG="$(git tag --list '$env:PREVIOUS_TAG_PATTERN' --sort=-v:refname | grep -Fvx "$TAG" | head -n 1 || true)"
           echo "previous_tag=${PREVIOUS_TAG}" >> "$GITHUB_OUTPUT"
         env:
           PREVIOUS_TAG_PATTERN: ${{ inputs.PREVIOUS_TAG_PATTERN }}
