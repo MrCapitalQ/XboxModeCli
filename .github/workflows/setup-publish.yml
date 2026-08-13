@@ -36,16 +36,6 @@ jobs:
           VERSION="${TAG#v}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-          # TODO: Remove
-          echo 'git tag'
-          git tag
-          
-          echo 'git tag list with hard coded pattern'
-          git tag --list 'v*.*.*-pre'
-                    
-          echo 'git tag list with env pattern in quotes'
-          git tag --list "${PREVIOUS_TAG_PATTERN}"
-
           PREVIOUS_TAG="$(git tag --list "${PREVIOUS_TAG_PATTERN}" --sort=-v:refname | grep -Fvx "$TAG" | head -n 1 || true)"
           echo "previous_tag=${PREVIOUS_TAG}" >> "$GITHUB_OUTPUT"
         env:
