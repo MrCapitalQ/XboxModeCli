@@ -37,8 +37,8 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
           # TODO: Remove
-          git tag $env:SOURCE
-          git tag '$env:SOURCE'
+          git tag --list $env:SOURCE
+          git tag --list '$env:SOURCE'
 
           PREVIOUS_TAG="$(git tag --list '$env:SOURCE' --sort=-v:refname | grep -Fvx "$TAG" | head -n 1 || true)"
           echo "previous_tag=${PREVIOUS_TAG}" >> "$GITHUB_OUTPUT"
