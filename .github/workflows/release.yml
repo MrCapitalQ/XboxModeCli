@@ -3,14 +3,15 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.[!-]'
+      - 'v*.*.*'
+      - '!v*.*.*-*'
 
 jobs:
   setup:
     name: Setup
     uses: ./.github/workflows/setup-publish.yml
     with:
-      PREVIOUS_TAG_PATTERN: "v*.*.[!-]"
+      PREVIOUS_TAG_PATTERN: "v*.*.*"
 
   build:
     name: Build
