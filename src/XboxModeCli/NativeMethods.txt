@@ -1,5 +1,6 @@
 MONITORINFOEXW
 VIRTUAL_KEY
+WM_CLOSE
 
 EnumChildWindows
 EnumWindows
@@ -9,4 +10,5 @@ GetWindowThreadProcessId
 IsWindowVisible
 keybd_event
 MonitorFromWindow
+PostMessage
 SetCursorPos

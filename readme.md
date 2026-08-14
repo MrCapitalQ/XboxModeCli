@@ -61,7 +61,7 @@ XboxModeCli activate
   Close the Settings app if it's open. This is a hacky workaround for a bug where switching in and out of XBOX mode can
   sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in
   this CLI and is likely to be removed in the future. If the `<delayInSeconds>` argument is omitted, a default delay of
-  1 second will be used before closing the Settings app.
+  3 seconds will be used before closing the Settings app.
 
 ### Deactivate Command
 Deactivates XBOX mode.
@@ -75,7 +75,7 @@ XboxModeCli deactivate
 - `-e|--exit <delayInSeconds>`
 
   Exit and close the XBOX app if XBOX mode deactivation is successful. If the `<delayInSeconds>` argument is omitted,
-  a default delay of 1 second will be used before closing the XBOX app after XBOX mode is deactivated.
+  a default delay of 3 seconds will be used before closing the XBOX app after XBOX mode is deactivated.
   
 - `-w|--waitForSessionUnlock <timeoutInSeconds>`
 
@@ -87,7 +87,7 @@ XboxModeCli deactivate
   Close the Settings app if it's open. This is a hacky workaround for a bug where switching in and out of XBOX mode can
   sometimes cause the Settings app to open. This is still being evaluated on whether this should be the included in
   this CLI and is likely to be removed in the future. If the `<delayInSeconds>` argument is omitted, a default delay of
-  1 second will be used before closing the Settings app.
+  3 seconds will be used before closing the Settings app.
 
 ## Examples
 
