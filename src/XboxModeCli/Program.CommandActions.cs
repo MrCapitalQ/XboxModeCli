@@ -10,7 +10,6 @@ internal static class CommandActions
         bool isActive,
         CancellationToken cancellationToken)
     {
-        await Task.Delay(3000);
         cancellationToken = await CreateMultiInstanceCancellationAsync(cancellationToken);
 
         Console.WriteLine($"{(isActive ? "Activating" : "Deactivating")} XBOX mode...");
