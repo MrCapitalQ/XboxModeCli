@@ -20,13 +20,13 @@ internal class SessionHelper
         var tcs = new TaskCompletionSource();
         void SystemEvents_SessionSwitch(object sender, SessionSwitchEventArgs e)
         {
-            if (e.Reason == SessionSwitchReason.SessionUnlock)
-            {
-                Console.WriteLine("Session was unlocked.");
+            if (e.Reason != SessionSwitchReason.SessionUnlock)
+                return;
 
-                SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
-                tcs.SetResult();
-            }
+            SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
+
+            if (tcs.TrySetResult())
+                Console.WriteLine("Session was unlocked. Detected via session unlock event.");
         }
 
         var timeoutCts = new CancellationTokenSource(timeout);
@@ -43,6 +43,21 @@ internal class SessionHelper
         });
 
         SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
+
+        // To deal with potentially flaky session unlock events or race conditions, also periodically poll for the
+        // current lock status as a backup.
+        _ = Task.Run(async () =>
+        {
+            while (!tcs.Task.IsCompleted && IsLocked())
+            {
+                await Task.Delay(1000);
+            }
+
+            SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
+
+            if (tcs.TrySetResult())
+                Console.WriteLine("Session was unlocked. Detected via polling current status.");
+        }, timeoutCts.Token);
 
         return tcs.Task;
     }
