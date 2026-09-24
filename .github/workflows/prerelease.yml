@@ -3,14 +3,14 @@ name: Prerelease
 on:
   push:
     tags:
-      - 'v*.*.*-pre'
+      - "v*.*.*-pre"
 
 jobs:
   setup:
     name: Setup
     uses: ./.github/workflows/setup-publish.yml
     with:
-      PREVIOUS_TAG_PATTERN: "v*.*.*-pre"
+      PREVIOUS_TAG_PATTERN: "v*.*.*"
 
   build:
     name: Build

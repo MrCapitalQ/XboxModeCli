@@ -12,7 +12,6 @@ on:
         value: ${{ jobs.setup_release.outputs.previous_tag }}
 
 jobs:
-
   setup_release:
     name: Setup GitHub Releases Publish
 
@@ -35,8 +34,10 @@ jobs:
           TAG="${GITHUB_REF_NAME}"
           VERSION="${TAG#v}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION"
 
           PREVIOUS_TAG="$(git tag --list "${PREVIOUS_TAG_PATTERN}" --sort=-v:refname | grep -Fvx "$TAG" | head -n 1 || true)"
           echo "previous_tag=${PREVIOUS_TAG}" >> "$GITHUB_OUTPUT"
+          echo "previous_tag=${PREVIOUS_TAG}"
         env:
           PREVIOUS_TAG_PATTERN: ${{ inputs.PREVIOUS_TAG_PATTERN }}
