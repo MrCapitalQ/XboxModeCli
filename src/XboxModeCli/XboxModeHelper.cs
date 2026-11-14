@@ -9,6 +9,10 @@ namespace MrCapitalQ.XboxModeCli;
 
 internal class XboxModeHelper
 {
+    // XboxPcApp is the process name of the original UWP-based XBOX app when XBOX mode was introduced.
+    // XboxPcAppCE is the process name of the new webview-based XBOX app experience replacing the previous version.
+    private static readonly HashSet<string> s_xboxProcessNames = ["XboxPcApp", "XboxPcAppCE"];
+
     public static async Task<bool> SetXboxModeAsync(bool isActive, CancellationToken cancellationToken = default)
     {
         if (await IsXboxModeAsync(cancellationToken) == isActive)
@@ -63,8 +67,8 @@ internal class XboxModeHelper
         foreach (var windowHandle in windows)
         {
             // If the XBOX window is the same size as the monitor it's on, then assume it to be in XBOX mode. This does
-            // not result in a false positive it's in fullscreen mode (via regular F11) because it doesn't seem to be
-            // a top-level window.
+            // not result in a false positive for the UWP-based app when it's in fullscreen mode (via regular F11)
+            // because it doesn't seem to be a top-level window.
             if (PInvoke.GetWindowRect(new(windowHandle), out var windowRect))
             {
                 var monitorHandle = PInvoke.MonitorFromWindow(new(windowHandle), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
@@ -82,20 +86,23 @@ internal class XboxModeHelper
     {
         var result = new List<nint>();
 
-        // The main UI window of the XBOX app can be either the main window of the process or a window presented by the
-        // ApplicationFrameHost process but should always relate back to the XboxPcApp process.
-        foreach (var process in Process.GetProcessesByName("XboxPcApp"))
+        foreach (var processName in s_xboxProcessNames)
         {
-            // Get all top-level windows and check if any of them are related to the XboxPcApp process and are in
-            // full-screen mode by comparing the size.
-            var windows = await WindowHelper.GetTopLevelWindowIdsAsync(cancellationToken);
-            foreach (var windowHandle in windows)
+            // The main UI window of the XBOX app can be either the main window of the process or a window presented by the
+            // ApplicationFrameHost process but should always relate back to the XboxPcApp process.
+            foreach (var process in Process.GetProcessesByName(processName))
             {
-                if (!await WindowHelper.IsWindowRelatedToProcessAsync(windowHandle, process, cancellationToken)
-                    || !PInvoke.IsWindowVisible(new(windowHandle)))
-                    continue;
+                // Get all top-level windows and check if any of them are related to the XboxPcApp process and are in
+                // full-screen mode by comparing the size.
+                var windows = await WindowHelper.GetTopLevelWindowIdsAsync(cancellationToken);
+                foreach (var windowHandle in windows)
+                {
+                    if (!await WindowHelper.IsWindowRelatedToProcessAsync(windowHandle, process, cancellationToken)
+                        || !PInvoke.IsWindowVisible(new(windowHandle)))
+                        continue;
 
-                result.Add(windowHandle);
+                    result.Add(windowHandle);
+                }
             }
         }
 
