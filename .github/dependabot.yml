@@ -8,3 +8,6 @@ updates:
       all-nuget-deps:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
